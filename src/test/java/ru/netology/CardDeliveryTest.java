@@ -29,7 +29,7 @@ public class CardDeliveryTest {
     @BeforeEach
     void setup() {
         open("http://localhost:9999");
-        Configuration.timeout = 8000;
+        
     }
 
     @Test
