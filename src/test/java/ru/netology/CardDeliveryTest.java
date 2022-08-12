@@ -63,7 +63,7 @@ public class CardDeliveryTest {
     }
 
     @Test
-    void shouldErrorWhenValuesOfCityWhenCityWithoutCase() {
+    void shouldOrderCardDeliveryWhenValuesOfCityWhenCityWithoutCase() {
         $x("//*[@data-test-id='city']//input").setValue("воронеж");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id='date'] input").doubleClick().setValue(date);
@@ -103,7 +103,7 @@ public class CardDeliveryTest {
     }
 
     @Test
-    void shouldErrorInTheNameWhenWithoutCase() {
+    void shouldOrderCardDeliveryInTheNameWhenWithoutCase() {
         $x("//*[@data-test-id='city']//input").setValue("Во");
         $x("//*[text()='Воронеж']").click();
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
@@ -119,7 +119,7 @@ public class CardDeliveryTest {
 
 
     @Test
-    void shouldErrorInTheNameWihtRussionYo() {
+    void shouldOrderCardDeliveryInTheNameWihtRussionYo() {
         $x("//*[@data-test-id='city']//input").setValue("Во");
         $x("//*[text()='Воронеж']").click();
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
@@ -135,7 +135,7 @@ public class CardDeliveryTest {
 
     // ограничение длины поля фамилия и имя не установлено
     @Test
-    void shouldHappyPathWhenNameIs1CharLength() {
+    void shouldOrderCardDeliveryWhenNameIs1CharLength() {
         $x("//*[@data-test-id='city']//input").setValue("Во");
         $x("//*[text()='Воронеж']").click();
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
