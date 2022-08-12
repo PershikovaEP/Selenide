@@ -6,12 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
 
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import static com.codeborne.selenide.Selenide.*;
 
@@ -25,26 +22,28 @@ public class CardDeliveryTest {
 //    Флажок согласия должен быть выставлен
 //    Тестируемая функциональность: отправка формы.
 
-    String date = LocalDate.now().plusDays(7).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+    public String calcDate(int days) {
+        return LocalDate.now().plusDays(days).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+    }
 
     @BeforeEach
     void setup() {
         open("http://localhost:9999");
-        
+        Configuration.timeout = 8000;
     }
 
     @Test
-    void shouldOrderCardDeliveryWhenValuesOfFieldsAreEntered() {
+    void shouldOrderCardDeliveryWhenValidCityNameIsEntered() {
         $x("//*[@data-test-id='city']//input").setValue("Воронеж");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue("19.08.2022");
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("Иванов Иван");
         $x("//*[@data-test-id='phone']//input").setValue("+79998889988");
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Забронировать']").click();
         $("[data-test-id='notification'] .notification__content")
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .shouldHave(Condition.exactText("Встреча успешно забронирована на 19.08.2022"));
+                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + calcDate(7)));
     }
 
     @Test
@@ -52,35 +51,35 @@ public class CardDeliveryTest {
         $x("//*[@data-test-id='city']//input").setValue("Во");
         $x("//*[text()='Воронеж']").click();
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("Иванов Иван");
         $x("//*[@data-test-id='phone']//input").setValue("+79998889988");
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Забронировать']").click();
         $("[data-test-id='notification'] .notification__content")
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + date));
+                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + calcDate(7)));
     }
 
     @Test
     void shouldOrderCardDeliveryWhenValuesOfCityWhenCityWithoutCase() {
         $x("//*[@data-test-id='city']//input").setValue("воронеж");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("Иванов Иван");
         $x("//*[@data-test-id='phone']//input").setValue("+79998889988");
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Забронировать']").click();
         $("[data-test-id='notification'] .notification__content")
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + date));
+                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + calcDate(7)));
     }
 
     @Test
     void shouldErrorWhenValuesOfCityInLatin() {
         $x("//*[@data-test-id='city']//input").setValue("voronej");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("Иванов Иван");
         $x("//*[@data-test-id='phone']//input").setValue("+79998889988");
         $("[data-test-id='agreement']").click();
@@ -93,7 +92,7 @@ public class CardDeliveryTest {
     void shouldErrorWhenValuesOfCityWhenCityNotAdministrativeCenter() {
         $x("//*[@data-test-id='city']//input").setValue("Острогожск");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("Иванов Иван");
         $x("//*[@data-test-id='phone']//input").setValue("+79998889988");
         $("[data-test-id='agreement']").click();
@@ -107,14 +106,14 @@ public class CardDeliveryTest {
         $x("//*[@data-test-id='city']//input").setValue("Во");
         $x("//*[text()='Воронеж']").click();
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("иванов ИВАН");
         $x("//*[@data-test-id='phone']//input").setValue("+79998889988");
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Забронировать']").click();
         $("[data-test-id='notification'] .notification__content")
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + date));
+                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + calcDate(7)));
     }
 
 
@@ -123,14 +122,14 @@ public class CardDeliveryTest {
         $x("//*[@data-test-id='city']//input").setValue("Во");
         $x("//*[text()='Воронеж']").click();
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("Иванов Фёдор");
         $x("//*[@data-test-id='phone']//input").setValue("+79998889988");
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Забронировать']").click();
         $("[data-test-id='notification'] .notification__content")
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + date));
+                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + calcDate(7)));
     }
 
     // ограничение длины поля фамилия и имя не установлено
@@ -139,14 +138,14 @@ public class CardDeliveryTest {
         $x("//*[@data-test-id='city']//input").setValue("Во");
         $x("//*[text()='Воронеж']").click();
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("И");
         $x("//*[@data-test-id='phone']//input").setValue("+79998889988");
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Забронировать']").click();
         $("[data-test-id='notification'] .notification__content")
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
-                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + date));
+                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + calcDate(7)));
     }
 
 
@@ -154,7 +153,7 @@ public class CardDeliveryTest {
     void shouldErrorInTheNameInLatin() {
         $x("//*[@data-test-id='city']//input").setValue("Воронеж");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("ivanov ivan");
         $x("//*[@data-test-id='phone']//input").setValue("+79998889988");
         $("[data-test-id='agreement']").click();
@@ -168,7 +167,7 @@ public class CardDeliveryTest {
     void shouldErrorInTheNameWithSymbol() {
         $x("//*[@data-test-id='city']//input").setValue("Воронеж");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("иванов?");
         $x("//*[@data-test-id='phone']//input").setValue("+79998889988");
         $("[data-test-id='agreement']").click();
@@ -180,7 +179,7 @@ public class CardDeliveryTest {
     @Test
     void shouldErrorInTheCityIsNotFilled() {
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("Иванов Иван");
         $x("//*[@data-test-id='phone']//input").setValue("+79998889988");
         $("[data-test-id='agreement']").click();
@@ -193,7 +192,7 @@ public class CardDeliveryTest {
     void shouldErrorInThePhoneIsNotFilled() {
         $x("//*[@data-test-id='city']//input").setValue("Воронеж");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("Иванов Иван");
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Забронировать']").click();
@@ -205,7 +204,7 @@ public class CardDeliveryTest {
     void shouldErrorInTheNameIsNotFilled() {
         $x("//*[@data-test-id='city']//input").setValue("Воронеж");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $x("//*[@data-test-id='phone']//input").setValue("+79998889988");
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Забронировать']").click();
@@ -217,7 +216,7 @@ public class CardDeliveryTest {
     void shouldErrorInThePhoneFilledIn10Digits() {
         $x("//*[@data-test-id='city']//input").setValue("Воронеж");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("иванов иван");
         $x("//*[@data-test-id='phone']//input").setValue("+7999888998");
         $("[data-test-id='agreement']").click();
@@ -230,7 +229,7 @@ public class CardDeliveryTest {
     void shouldErrorInThePhoneFilledIn12Digits() {
         $x("//*[@data-test-id='city']//input").setValue("Воронеж");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("иванов иван");
         $x("//*[@data-test-id='phone']//input").setValue("+799988899889");
         $("[data-test-id='agreement']").click();
@@ -243,7 +242,7 @@ public class CardDeliveryTest {
     void shouldErrorInThePhoneFilledInRussiaLetter() {
         $x("//*[@data-test-id='city']//input").setValue("Воронеж");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("иванов иван");
         $x("//*[@data-test-id='phone']//input").setValue("+7999888998о");
         $("[data-test-id='agreement']").click();
@@ -256,7 +255,7 @@ public class CardDeliveryTest {
     void shouldErrorInThePhoneFilledInLatin() {
         $x("//*[@data-test-id='city']//input").setValue("Воронеж");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("иванов иван");
         $x("//*[@data-test-id='phone']//input").setValue("+7999888998s");
         $("[data-test-id='agreement']").click();
@@ -269,7 +268,7 @@ public class CardDeliveryTest {
     void shouldErrorInThePhoneFilledIsNotPlus() {
         $x("//*[@data-test-id='city']//input").setValue("Воронеж");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("иванов иван");
         $x("//*[@data-test-id='phone']//input").setValue("79998889988");
         $("[data-test-id='agreement']").click();
@@ -282,7 +281,7 @@ public class CardDeliveryTest {
     void shouldErrorInThePhoneFilledWhenPlusInMiddle() {
         $x("//*[@data-test-id='city']//input").setValue("Воронеж");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("иванов иван");
         $x("//*[@data-test-id='phone']//input").setValue("7+9998889988");
         $("[data-test-id='agreement']").click();
@@ -302,7 +301,7 @@ public class CardDeliveryTest {
     void shouldBeVisibleCheckboxClassInputInvalidWhenSendingAnEmptyCheckbox() {
         $x("//*[@data-test-id='city']//input").setValue("Воронеж");
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(7));
         $("[data-test-id='name'] input").setValue("иванов иван");
         $x("//*[@data-test-id='phone']//input").setValue("+79998889988");
         $x("//*[text()='Забронировать']").click();
@@ -312,16 +311,46 @@ public class CardDeliveryTest {
 
     @Test
     void shouldNotCardDeliveryWhenDeliveryLessThan3Days() {
-        String date1 = LocalDate.now().plusDays(2).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         $x("//*[@data-test-id='city']//input").setValue("Во");
         $x("//*[text()='Воронеж']").click();
         $("[data-test-id='date'] input").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[data-test-id='date'] input").doubleClick().setValue(date1);
+        $("[data-test-id='date'] input").doubleClick().setValue(calcDate(2));
         $("[data-test-id='name'] input").setValue("Иванов Иван");
         $x("//*[@data-test-id='phone']//input").setValue("+79998889988");
         $("[data-test-id='agreement']").click();
         $x("//*[text()='Забронировать']").click();
         $("[data-test-id='date'] .input__sub")
                 .shouldHave(Condition.exactText("Заказ на выбранную дату невозможен"));
+    }
+
+    @Test
+    void shouldNotCardDeliveryWhenDateIsSelectedFromCalendar() {
+        $x("//*[@data-test-id='city']//input").setValue("Во");
+        $x("//*[text()='Воронеж']").click();
+        $(".icon-button").click();
+        int day = 150;
+        int currentMonth = Integer.parseInt(LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")).substring(3, 5));
+        int generateMonth = Integer.parseInt(calcDate(day).substring(3, 5));
+        int result = generateMonth - currentMonth;
+        if (result == 0) {
+            return;
+        }
+        if (result > 0) {
+            for (int i = 0; i < result; i++) {
+                $(".calendar__arrow_direction_right.calendar__arrow_double+.calendar__arrow_direction_right").click();
+            }
+        } else {
+            for (int i = 0; i < 12 + result; i++) {
+                $(".calendar__arrow_direction_right.calendar__arrow_double+.calendar__arrow_direction_right").click();
+            }
+        }
+        $x("//td[text()='" + Integer.parseInt(calcDate(day).substring(0, 2)) + "']").click();
+        $("[data-test-id='name'] input").setValue("Иванов Иван");
+        $x("//*[@data-test-id='phone']//input").setValue("+79998889988");
+        $("[data-test-id='agreement']").click();
+        $x("//*[text()='Забронировать']").click();
+        $("[data-test-id='notification'] .notification__content")
+                .shouldBe(Condition.visible, Duration.ofSeconds(15))
+                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + calcDate(day)));
     }
 }
